@@ -116,8 +116,8 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             
-            <!-- Mostrar códigos adicionales solo para productos SIN variantes -->
-            <field name="barcode" position="after">
+            <!-- Buscar el campo barcode usando xpath más específico -->
+            <xpath expr="//field[@name='barcode']" position="after">
                 <field name="additional_barcode_count" invisible="1"/>
                 <div invisible="product_variant_count > 1">
                     <button name="%(action_product_barcode_template)d" 
@@ -133,7 +133,7 @@
                     <span invisible="additional_barcode_count == 0" 
                           class="text-muted">)</span>
                 </div>
-            </field>
+            </xpath>
             
             <!-- Añadir pestaña para códigos adicionales -->
             <notebook position="inside">
@@ -179,7 +179,7 @@
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
             
-            <field name="barcode" position="after">
+            <xpath expr="//field[@name='barcode']" position="after">
                 <field name="additional_barcode_count" invisible="1"/>
                 <button name="%(action_product_barcode_variant)d" 
                         type="action" 
@@ -193,7 +193,7 @@
                       class="text-muted"><field name="additional_barcode_count"/></span>
                 <span invisible="additional_barcode_count == 0" 
                       class="text-muted">)</span>
-            </field>
+            </xpath>
             
             <notebook position="inside">
                 <page string="Códigos de Barras de la Variante" name="variant_barcodes">
