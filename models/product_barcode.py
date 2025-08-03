@@ -71,6 +71,9 @@ class ProductBarcode(models.Model):
                 record.product_name = False
                 record.product_type = False
     
+
+	
+
     @api.constrains('barcode')
     def _check_barcode_format(self):
         """Validar formato y unicidad del código de barras"""
@@ -81,12 +84,15 @@ class ProductBarcode(models.Model):
                 if not barcode_clean:
                     raise ValidationError("El código de barras no puede estar vacío.")
                 
-                # Actualizar con código limpio
-                record.barcode = barcode_clean
+                # SOLO actualizar si es diferente (evita bucle infinito)
+                if record.barcode != barcode_clean:
+                    # Usar write directo sin disparar validaciones
+                    record.write({'barcode': barcode_clean})
                 
                 # Verificar que no exista en códigos principales de product.template
                 existing_template = self.env['product.template'].search([
-                    ('barcode', '=', barcode_clean)
+                    ('barcode', '=', barcode_clean),
+                    ('id', '!=', record.product_tmpl_id.id if record.product_tmpl_id else False)
                 ])
                 if existing_template:
                     raise ValidationError(
@@ -96,13 +102,27 @@ class ProductBarcode(models.Model):
                 
                 # Verificar que no exista en códigos principales de product.product
                 existing_product = self.env['product.product'].search([
-                    ('barcode', '=', barcode_clean)
+                    ('barcode', '=', barcode_clean),
+                    ('id', '!=', record.product_id.id if record.product_id else False)
                 ])
                 if existing_product:
                     raise ValidationError(
                         f"El código '{barcode_clean}' ya existe como código principal "
                         f"en la variante '{existing_product.display_name}'"
                     )
+                
+                # Verificar que no exista en otros códigos adicionales
+                existing_barcode = self.env['product.barcode'].search([
+                    ('barcode', '=', barcode_clean),
+                    ('id', '!=', record.id)
+                ])
+                if existing_barcode:
+                    raise ValidationError(
+                        f"El código '{barcode_clean}' ya existe como código adicional "
+                        f"en otro producto"
+                    )
+
+
     
     @api.constrains('product_tmpl_id', 'product_id')
     def _check_product_assignment(self):
