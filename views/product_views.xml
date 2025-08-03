@@ -116,28 +116,27 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             
-            <!-- Buscar el campo barcode usando xpath más específico -->
-            <xpath expr="//field[@name='barcode']" position="after">
+            <!-- Buscar el grupo que contiene el campo barcode -->
+            <group name="codes" position="after">
                 <field name="additional_barcode_count" invisible="1"/>
-                <div invisible="product_variant_count > 1">
-                    <button name="%(action_product_barcode_template)d" 
-                            type="action" 
-                            string="Códigos Adicionales" 
-                            class="oe_link"
-                            invisible="additional_barcode_count == 0"
-                            context="{'default_product_tmpl_id': id}"/>
-                    <span invisible="additional_barcode_count == 0" 
-                          class="text-muted"> (</span>
-                    <span invisible="additional_barcode_count == 0" 
-                          class="text-muted"><field name="additional_barcode_count"/></span>
-                    <span invisible="additional_barcode_count == 0" 
-                          class="text-muted">)</span>
+                <div invisible="product_variant_count > 1" class="mt-2">
+                    <label for="additional_barcode_ids" string="Códigos Adicionales:" class="o_form_label"/>
+                    <div invisible="additional_barcode_count == 0">
+                        <button name="%(action_product_barcode_template)d" 
+                                type="action" 
+                                string="Ver Todos los Códigos" 
+                                class="btn btn-link ps-0"
+                                context="{'default_product_tmpl_id': id}"/>
+                        <span class="text-muted">
+                            (<field name="additional_barcode_count"/> códigos configurados)
+                        </span>
+                    </div>
                 </div>
-            </xpath>
+            </group>
             
-            <!-- Añadir pestaña para códigos adicionales -->
+            <!-- Agregar pestaña para códigos adicionales -->
             <notebook position="inside">
-                <page string="Códigos de Barras" 
+                <page string="Códigos de Barras Múltiples" 
                       name="additional_barcodes"
                       invisible="product_variant_count > 1">
                     <div class="alert alert-info" role="alert">
@@ -179,27 +178,25 @@
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
             
-            <xpath expr="//field[@name='barcode']" position="after">
-                <field name="additional_barcode_count" invisible="1"/>
-                <button name="%(action_product_barcode_variant)d" 
-                        type="action" 
-                        string="Códigos Adicionales de esta Variante" 
-                        class="oe_link"
-                        invisible="additional_barcode_count == 0"
-                        context="{'default_product_id': id}"/>
-                <span invisible="additional_barcode_count == 0" 
-                      class="text-muted"> (</span>
-                <span invisible="additional_barcode_count == 0" 
-                      class="text-muted"><field name="additional_barcode_count"/></span>
-                <span invisible="additional_barcode_count == 0" 
-                      class="text-muted">)</span>
-            </xpath>
-            
             <notebook position="inside">
-                <page string="Códigos de Barras de la Variante" name="variant_barcodes">
+                <page string="Códigos de Barras Múltiples" name="variant_barcodes">
                     <div class="alert alert-info" role="alert">
                         <strong>Códigos Específicos de esta Variante</strong><br/>
                         Estos códigos son exclusivos de esta variante del producto.
+                    </div>
+                    
+                    <field name="additional_barcode_count" invisible="1"/>
+                    <div class="row mb-3" invisible="additional_barcode_count == 0">
+                        <div class="col-12">
+                            <button name="%(action_product_barcode_variant)d" 
+                                    type="action" 
+                                    string="Gestionar Códigos de esta Variante" 
+                                    class="btn btn-primary"
+                                    context="{'default_product_id': id}"/>
+                            <span class="text-muted ms-2">
+                                (<field name="additional_barcode_count"/> códigos configurados)
+                            </span>
+                        </div>
                     </div>
                     
                     <field name="additional_barcode_ids" 
