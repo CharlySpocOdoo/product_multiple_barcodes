@@ -38,18 +38,18 @@
     </record>
     
     <!-- Vista lista para product.barcode -->
-    <record id="view_product_barcode_tree" model="ir.ui.view">
-        <field name="name">product.barcode.tree</field>
+    <record id="view_product_barcode_list" model="ir.ui.view">
+        <field name="name">product.barcode.list</field>
         <field name="model">product.barcode</field>
         <field name="arch" type="xml">
-            <tree string="Códigos de Barras Adicionales" editable="bottom">
+            <list string="Códigos de Barras Adicionales" editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="barcode"/>
                 <field name="name"/>
                 <field name="product_name" readonly="1"/>
                 <field name="product_type" readonly="1"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -93,12 +93,12 @@
                     <field name="additional_barcode_ids" 
                            context="{'default_product_tmpl_id': id}"
                            widget="one2many">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="sequence" widget="handle"/>
                             <field name="barcode" placeholder="Código de barras alternativo"/>
                             <field name="name" placeholder="Descripción (opcional)"/>
                             <field name="active"/>
-                        </tree>
+                        </list>
                     </field>
                     
                     <div class="mt-3">
@@ -149,12 +149,12 @@
                     <field name="additional_barcode_ids" 
                            context="{'default_product_id': id}"
                            widget="one2many">
-                        <tree editable="bottom">
+                        <list editable="bottom">
                             <field name="sequence" widget="handle"/>
                             <field name="barcode" placeholder="Código específico de esta variante"/>
                             <field name="name" placeholder="Descripción (opcional)"/>
                             <field name="active"/>
-                        </tree>
+                        </list>
                     </field>
                     
                     <div class="mt-3">
@@ -175,7 +175,7 @@
     <record id="action_product_barcode_template" model="ir.actions.act_window">
         <field name="name">Códigos de Barras Adicionales</field>
         <field name="res_model">product.barcode</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[('product_tmpl_id', '=', active_id)]</field>
         <field name="context">{'default_product_tmpl_id': active_id}</field>
         <field name="help" type="html">
@@ -193,7 +193,7 @@
     <record id="action_product_barcode_variant" model="ir.actions.act_window">
         <field name="name">Códigos de Barras de la Variante</field>
         <field name="res_model">product.barcode</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[('product_id', '=', active_id)]</field>
         <field name="context">{'default_product_id': active_id}</field>
         <field name="help" type="html">
@@ -210,7 +210,7 @@
     <record id="action_product_barcode_all" model="ir.actions.act_window">
         <field name="name">Gestión de Códigos de Barras</field>
         <field name="res_model">product.barcode</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Gestiona todos los códigos de barras adicionales
