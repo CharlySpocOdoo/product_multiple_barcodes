@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista formulario para product.barcode -->
+    <record id="view_product_barcode_form" model="ir.ui.view">
+        <field name="name">product.barcode.form</field>
+        <field name="model">product.barcode</field>
+        <field name="arch" type="xml">
+            <form string="Código de Barras Adicional">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="barcode" placeholder="Código de barras..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="Descripción opcional (ej: Código proveedor A)"/>
+                            <field name="active"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="product_type" readonly="1"/>
+                            <field name="product_name" readonly="1"/>
+                            <field name="product_tmpl_id" 
+                                   attrs="{'invisible': [('product_type', '!=', 'template')], 'readonly': [('product_type', '!=', False)]}"
+                                   options="{'no_create': True}"/>
+                            <field name="product_id" 
+                                   attrs="{'invisible': [('product_type', '!=', 'variant')], 'readonly': [('product_type', '!=', False)]}"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Vista lista para product.barcode -->
+    <record id="view_product_barcode_tree" model="ir.ui.view">
+        <field name="name">product.barcode.tree</field>
+        <field name="model">product.barcode</field>
+        <field name="arch" type="xml">
+            <tree string="Códigos de Barras Adicionales" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="barcode"/>
+                <field name="name"/>
+                <field name="product_name" readonly="1"/>
+                <field name="product_type" readonly="1"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Heredar vista product.template (productos SIN variantes) -->
+    <record id="product_template_form_view_inherit_barcode" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.multiple.barcode</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            
+            <!-- Mostrar códigos adicionales solo para productos SIN variantes -->
+            <field name="barcode" position="after">
+                <field name="additional_barcode_count" invisible="1"/>
+                <div attrs="{'invisible': [('product_variant_count', '>', 1)]}">
+                    <button name="%(action_product_barcode_template)d" 
+                            type="action" 
+                            string="Códigos Adicionales" 
+                            class="oe_link"
+                            attrs="{'invisible': [('additional_barcode_count', '=', 0)]}"
+                            context="{'default_product_tmpl_id': id}"/>
+                    <span attrs="{'invisible': [('additional_barcode_count', '=', 0)]}" 
+                          class="text-muted"> (</span>
+                    <span attrs="{'invisible': [('additional_barcode_count', '=', 0)]}" 
+                          class="text-muted"><field name="additional_barcode_count"/></span>
+                    <span attrs="{'invisible': [('additional_barcode_count', '=', 0)]}" 
+                          class="text-muted">)</span>
+                </div>
+            </field>
+            
+            <!-- Añadir pestaña para códigos adicionales -->
+            <notebook position="inside">
+                <page string="Códigos de Barras" 
+                      name="additional_barcodes"
+                      attrs="{'invisible': [('product_variant_count', '>', 1)]}">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Códigos de Barras Adicionales</strong><br/>
+                        Agrega códigos alternativos que también identifiquen este producto.
+                        Útil para códigos de diferentes proveedores, códigos antiguos, etc.
+                    </div>
+                    
+                    <field name="additional_barcode_ids" 
+                           context="{'default_product_tmpl_id': id}"
+                           widget="one2many">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="barcode" placeholder="Código de barras alternativo"/>
+                            <field name="name" placeholder="Descripción (opcional)"/>
+                            <field name="active"/>
+                        </tree>
+                    </field>
+                    
+                    <div class="mt-3">
+                        <h6>Instrucciones:</h6>
+                        <ul class="list-unstyled">
+                            <li>• Todos los códigos deben ser únicos en el sistema</li>
+                            <li>• Puedes buscar el producto usando cualquiera de estos códigos</li>
+                            <li>• La descripción es opcional pero recomendada</li>
+                            <li>• Usa el campo "Activo" para deshabilitar códigos temporalmente</li>
+                        </ul>
+                    </div>
+                </page>
+            </notebook>
+            
+        </field>
+    </record>
+    
+    <!-- Heredar vista product.product (variantes específicas) -->
+    <record id="product_normal_form_view_inherit_barcode" model="ir.ui.view">
+        <field name="name">product.product.form.inherit.multiple.barcode</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            
+            <field name="barcode" position="after">
+                <field name="additional_barcode_count" invisible="1"/>
+                <button name="%(action_product_barcode_variant)d" 
+                        type="action" 
+                        string="Códigos Adicionales de esta Variante" 
+                        class="oe_link"
+                        attrs="{'invisible': [('additional_barcode_count', '=', 0)]}"
+                        context="{'default_product_id': id}"/>
+                <span attrs="{'invisible': [('additional_barcode_count', '=', 0)]}" 
+                      class="text-muted"> (</span>
+                <span attrs="{'invisible': [('additional_barcode_count', '=', 0)]}" 
+                      class="text-muted"><field name="additional_barcode_count"/></span>
+                <span attrs="{'invisible': [('additional_barcode_count', '=', 0)]}" 
+                      class="text-muted">)</span>
+            </field>
+            
+            <notebook position="inside">
+                <page string="Códigos de Barras de la Variante" name="variant_barcodes">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Códigos Específicos de esta Variante</strong><br/>
+                        Estos códigos son exclusivos de esta variante del producto.
+                    </div>
+                    
+                    <field name="additional_barcode_ids" 
+                           context="{'default_product_id': id}"
+                           widget="one2many">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="barcode" placeholder="Código específico de esta variante"/>
+                            <field name="name" placeholder="Descripción (opcional)"/>
+                            <field name="active"/>
+                        </tree>
+                    </field>
+                    
+                    <div class="mt-3">
+                        <h6>Nota importante:</h6>
+                        <p class="text-muted">
+                            Estos códigos son específicos únicamente de esta variante. 
+                            Si necesitas códigos que apliquen a todas las variantes, 
+                            contacta al administrador del sistema.
+                        </p>
+                    </div>
+                </page>
+            </notebook>
+            
+        </field>
+    </record>
+    
+    <!-- Acción para ver códigos desde product.template -->
+    <record id="action_product_barcode_template" model="ir.actions.act_window">
+        <field name="name">Códigos de Barras Adicionales</field>
+        <field name="res_model">product.barcode</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('product_tmpl_id', '=', active_id)]</field>
+        <field name="context">{'default_product_tmpl_id': active_id}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Agrega códigos de barras adicionales
+            </p>
+            <p>
+                Agrega códigos alternativos para este producto sin variantes.
+                Todos los códigos podrán ser usados para encontrar el producto en ventas, inventario y POS.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Acción para ver códigos desde product.product -->
+    <record id="action_product_barcode_variant" model="ir.actions.act_window">
+        <field name="name">Códigos de Barras de la Variante</field>
+        <field name="res_model">product.barcode</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('product_id', '=', active_id)]</field>
+        <field name="context">{'default_product_id': active_id}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Agrega códigos específicos de esta variante
+            </p>
+            <p>
+                Estos códigos serán exclusivos de esta variante del producto.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Acción general para gestionar todos los códigos -->
+    <record id="action_product_barcode_all" model="ir.actions.act_window">
+        <field name="name">Gestión de Códigos de Barras</field>
+        <field name="res_model">product.barcode</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Gestiona todos los códigos de barras adicionales
+            </p>
+            <p>
+                Aquí puedes ver y gestionar todos los códigos de barras adicionales del sistema.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Menú en Inventario -->
+    <menuitem id="menu_product_barcode"
+              name="Códigos de Barras"
+              parent="stock.menu_stock_config_settings"
+              action="action_product_barcode_all"
+              sequence="50"/>
+
+</odoo>
