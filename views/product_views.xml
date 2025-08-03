@@ -116,33 +116,29 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             
-            <!-- Buscar el grupo que contiene el campo barcode -->
-            <group name="codes" position="after">
-                <field name="additional_barcode_count" invisible="1"/>
-                <div invisible="product_variant_count > 1" class="mt-2">
-                    <label for="additional_barcode_ids" string="Códigos Adicionales:" class="o_form_label"/>
-                    <div invisible="additional_barcode_count == 0">
-                        <button name="%(action_product_barcode_template)d" 
-                                type="action" 
-                                string="Ver Todos los Códigos" 
-                                class="btn btn-link ps-0"
-                                context="{'default_product_tmpl_id': id}"/>
-                        <span class="text-muted">
-                            (<field name="additional_barcode_count"/> códigos configurados)
-                        </span>
-                    </div>
-                </div>
-            </group>
-            
-            <!-- Agregar pestaña para códigos adicionales -->
+            <!-- Solo agregar pestaña - sin buscar elementos específicos -->
             <notebook position="inside">
                 <page string="Códigos de Barras Múltiples" 
                       name="additional_barcodes"
                       invisible="product_variant_count > 1">
                     <div class="alert alert-info" role="alert">
                         <strong>Códigos de Barras Adicionales</strong><br/>
-                        Agrega códigos alternativos que también identifiquen este producto.
+                        Este producto puede tener múltiples códigos de barras.
                         Útil para códigos de diferentes proveedores, códigos antiguos, etc.
+                    </div>
+                    
+                    <field name="additional_barcode_count" invisible="1"/>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <button name="%(action_product_barcode_template)d" 
+                                    type="action" 
+                                    string="Gestionar en Ventana Separada" 
+                                    class="btn btn-secondary"
+                                    context="{'default_product_tmpl_id': id}"/>
+                            <span class="text-muted ms-2" invisible="additional_barcode_count == 0">
+                                (<field name="additional_barcode_count"/> códigos configurados)
+                            </span>
+                        </div>
                     </div>
                     
                     <field name="additional_barcode_ids" 
@@ -150,19 +146,19 @@
                            widget="one2many">
                         <list editable="bottom">
                             <field name="sequence" widget="handle"/>
-                            <field name="barcode" placeholder="Código de barras alternativo"/>
+                            <field name="barcode" placeholder="Código de barras alternativo" required="1"/>
                             <field name="name" placeholder="Descripción (opcional)"/>
                             <field name="active"/>
                         </list>
                     </field>
                     
                     <div class="mt-3">
-                        <h6>Instrucciones:</h6>
+                        <h6>Instrucciones de Uso:</h6>
                         <ul class="list-unstyled">
-                            <li>• Todos los códigos deben ser únicos en el sistema</li>
-                            <li>• Puedes buscar el producto usando cualquiera de estos códigos</li>
-                            <li>• La descripción es opcional pero recomendada</li>
-                            <li>• Usa el campo "Activo" para deshabilitar códigos temporalmente</li>
+                            <li>• <strong>Único por sistema:</strong> Cada código debe ser único</li>
+                            <li>• <strong>Búsqueda automática:</strong> Funciona en POS, Ventas e Inventario</li>
+                            <li>• <strong>Descripciones:</strong> Ayudan a identificar el origen del código</li>
+                            <li>• <strong>Control de activación:</strong> Desactiva códigos temporalmente</li>
                         </ul>
                     </div>
                 </page>
