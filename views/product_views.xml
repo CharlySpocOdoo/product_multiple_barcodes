@@ -1,6 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
+    <!-- PRIMERO: Definir todas las acciones -->
+    
+    <!-- Acción para ver códigos desde product.template -->
+    <record id="action_product_barcode_template" model="ir.actions.act_window">
+        <field name="name">Códigos de Barras Adicionales</field>
+        <field name="res_model">product.barcode</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('product_tmpl_id', '=', active_id)]</field>
+        <field name="context">{'default_product_tmpl_id': active_id}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Agrega códigos de barras adicionales
+            </p>
+            <p>
+                Agrega códigos alternativos para este producto sin variantes.
+                Todos los códigos podrán ser usados para encontrar el producto en ventas, inventario y POS.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Acción para ver códigos desde product.product -->
+    <record id="action_product_barcode_variant" model="ir.actions.act_window">
+        <field name="name">Códigos de Barras de la Variante</field>
+        <field name="res_model">product.barcode</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('product_id', '=', active_id)]</field>
+        <field name="context">{'default_product_id': active_id}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Agrega códigos específicos de esta variante
+            </p>
+            <p>
+                Estos códigos serán exclusivos de esta variante del producto.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Acción general para gestionar todos los códigos -->
+    <record id="action_product_barcode_all" model="ir.actions.act_window">
+        <field name="name">Gestión de Códigos de Barras</field>
+        <field name="res_model">product.barcode</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Gestiona todos los códigos de barras adicionales
+            </p>
+            <p>
+                Aquí puedes ver y gestionar todos los códigos de barras adicionales del sistema.
+            </p>
+        </field>
+    </record>
+    
+    <!-- SEGUNDO: Definir las vistas -->
+    
     <!-- Vista formulario para product.barcode -->
     <record id="view_product_barcode_form" model="ir.ui.view">
         <field name="name">product.barcode.form</field>
@@ -52,6 +106,8 @@
             </list>
         </field>
     </record>
+    
+    <!-- TERCERO: Heredar vistas existentes -->
     
     <!-- Heredar vista product.template (productos SIN variantes) -->
     <record id="product_template_form_view_inherit_barcode" model="ir.ui.view">
@@ -171,55 +227,7 @@
         </field>
     </record>
     
-    <!-- Acción para ver códigos desde product.template -->
-    <record id="action_product_barcode_template" model="ir.actions.act_window">
-        <field name="name">Códigos de Barras Adicionales</field>
-        <field name="res_model">product.barcode</field>
-        <field name="view_mode">list,form</field>
-        <field name="domain">[('product_tmpl_id', '=', active_id)]</field>
-        <field name="context">{'default_product_tmpl_id': active_id}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Agrega códigos de barras adicionales
-            </p>
-            <p>
-                Agrega códigos alternativos para este producto sin variantes.
-                Todos los códigos podrán ser usados para encontrar el producto en ventas, inventario y POS.
-            </p>
-        </field>
-    </record>
-    
-    <!-- Acción para ver códigos desde product.product -->
-    <record id="action_product_barcode_variant" model="ir.actions.act_window">
-        <field name="name">Códigos de Barras de la Variante</field>
-        <field name="res_model">product.barcode</field>
-        <field name="view_mode">list,form</field>
-        <field name="domain">[('product_id', '=', active_id)]</field>
-        <field name="context">{'default_product_id': active_id}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Agrega códigos específicos de esta variante
-            </p>
-            <p>
-                Estos códigos serán exclusivos de esta variante del producto.
-            </p>
-        </field>
-    </record>
-    
-    <!-- Acción general para gestionar todos los códigos -->
-    <record id="action_product_barcode_all" model="ir.actions.act_window">
-        <field name="name">Gestión de Códigos de Barras</field>
-        <field name="res_model">product.barcode</field>
-        <field name="view_mode">list,form</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Gestiona todos los códigos de barras adicionales
-            </p>
-            <p>
-                Aquí puedes ver y gestionar todos los códigos de barras adicionales del sistema.
-            </p>
-        </field>
-    </record>
+    <!-- CUARTO: Menú -->
     
     <!-- Menú en Inventario -->
     <menuitem id="menu_product_barcode"
